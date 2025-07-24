@@ -1,303 +1,228 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Clicker com Login e Leaderboard Local</title>
-<style>
-  body {
-    background:#121212;
-    color:#eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    padding:20px;
-    user-select:none;
-  }
-  h1 {
-    margin-bottom: 0.2em;
-  }
-  #login-area, #game-area {
-    background:#222;
-    padding:20px;
-    border-radius:15px;
-    box-shadow: 0 0 10px #00cc77aa;
-    width:360px;
-    margin-bottom:30px;
-  }
-  #login-area input {
-    width:100%;
-    padding:10px;
-    font-size:1.2rem;
-    border-radius:8px;
-    border:none;
-    margin-bottom:10px;
-    box-sizing: border-box;
-  }
-  #login-area button {
-    width:100%;
-    padding:10px;
-    font-size:1.3rem;
-    background:#00cc77;
-    border:none;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-    box-shadow: 0 4px #009955;
-    color:#121212;
-  }
-  #login-area button:hover {
-    background:#00e685;
-  }
-  #score {
-    font-size:3rem;
-    margin:15px 0 25px;
-    color:#00ff99;
-    text-shadow: 0 0 10px #00ff99;
-    text-align:center;
-  }
-  button#clickBtn {
-    cursor:pointer;
-    background:#00cc77;
-    border:none;
-    border-radius:10px;
-    padding:15px 30px;
-    font-size:1.5rem;
-    color:#121212;
-    font-weight:bold;
-    box-shadow: 0 5px #009955;
-    transition: background 0.3s ease;
-    margin-bottom: 25px;
-    width: 100%;
-  }
-  button#clickBtn:hover {
-    background:#00e685;
-  }
-  .upgrades {
-    display:flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  .upgrade {
-    background:#333;
-    padding:12px 15px;
-    border-radius:12px;
-    box-shadow: inset 0 0 8px #00774488;
-    text-align:center;
-  }
-  .upgrade h2 {
-    margin:0 0 8px;
-    color:#00ff99;
-    font-size:1.3rem;
-  }
-  .upgrade p {
-    margin:0 0 8px;
-    font-size:1rem;
-  }
-  .cost {
-    font-weight:bold;
-    color:#55ff88;
-    margin-bottom:10px;
-  }
-  .upgrade button {
-    padding:8px 20px;
-    background:#00cc77;
-    border:none;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-    color:#121212;
-    box-shadow: 0 4px #009955;
-    transition: background 0.3s ease;
-  }
-  .upgrade button:disabled {
-    background:#444;
-    box-shadow:none;
-    cursor: default;
-    color:#888;
-  }
-  .upgrade button:hover:not(:disabled) {
-    background:#00e685;
-  }
-  #leaderboard {
-    margin-top:30px;
-    background:#222;
-    border-radius:15px;
-    width:360px;
-    padding:15px 20px;
-    box-shadow: 0 0 10px #00cc77aa;
-  }
-  #leaderboard h2 {
-    margin-top:0;
-    color:#00ff99;
-    text-align:center;
-  }
-  #leaderboard ol {
-    padding-left: 20px;
-    font-size:1rem;
-    color:#ccc;
-  }
-  #leaderboard li {
-    margin-bottom:6px;
-  }
-  #userNameDisplay {
-    text-align:center;
-    margin-bottom:10px;
-    font-weight:bold;
-    font-size:1.1rem;
-    color:#00ff99;
-  }
-  #logoutBtn {
-    margin-top: 5px;
-    background:#cc0000;
-    color:#fff;
-    border:none;
-    padding:5px 12px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-    box-shadow: 0 3px #990000;
-  }
-  #logoutBtn:hover {
-    background:#ee2222;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clicker com Login e Leaderboard Local</title>
+  <style>
+    body {
+      background:#121212;
+      color:#eee;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+      padding:20px;
+      user-select:none;
+    }
+    h1 {
+      margin-bottom: 0.2em;
+    }
+    section, main, aside {
+      background:#222;
+      padding:20px;
+      border-radius:15px;
+      box-shadow: 0 0 10px #00cc77aa;
+      width:360px;
+      margin-bottom:30px;
+    }
+    input, button {
+      font-family: inherit;
+    }
+    input {
+      width:100%;
+      padding:10px;
+      font-size:1.2rem;
+      border-radius:8px;
+      border:none;
+      margin-bottom:10px;
+      box-sizing: border-box;
+    }
+    button {
+      width:100%;
+      padding:10px;
+      font-size:1.3rem;
+      background:#00cc77;
+      border:none;
+      border-radius:8px;
+      font-weight:bold;
+      cursor:pointer;
+      box-shadow: 0 4px #009955;
+      color:#121212;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background:#00e685;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    #score {
+      font-size:3rem;
+      margin:15px 0 25px;
+      color:#00ff99;
+      text-shadow: 0 0 10px #00ff99;
+      text-align:center;
+    }
+    #clickBtn {
+      padding:15px 30px;
+      font-size:1.5rem;
+      margin-bottom: 25px;
+    }
+    .upgrades {
+      display:flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .upgrade {
+      background:#333;
+      padding:12px 15px;
+      border-radius:12px;
+      box-shadow: inset 0 0 8px #00774488;
+      text-align:center;
+    }
+    .upgrade h2 {
+      margin:0 0 8px;
+      color:#00ff99;
+      font-size:1.3rem;
+    }
+    .upgrade p {
+      margin:0 0 8px;
+      font-size:1rem;
+    }
+    .cost {
+      font-weight:bold;
+      color:#55ff88;
+      margin-bottom:10px;
+    }
+    .upgrade button {
+      padding:8px 20px;
+      border:none;
+      border-radius:8px;
+      font-weight:bold;
+      box-shadow: 0 4px #009955;
+      transition: background 0.3s ease;
+    }
+    .upgrade button:disabled {
+      background:#444;
+      box-shadow:none;
+      cursor: default;
+      color:#888;
+    }
+    .upgrade button:hover:not(:disabled) {
+      background:#00e685;
+    }
+    #leaderboard h2 {
+      margin-top:0;
+      color:#00ff99;
+      text-align:center;
+    }
+    #leaderboard ol {
+      padding-left: 20px;
+      font-size:1rem;
+      color:#ccc;
+    }
+    #leaderboard li {
+      margin-bottom:6px;
+    }
+    #userNameDisplay {
+      text-align:center;
+      margin-bottom:10px;
+      font-weight:bold;
+      font-size:1.1rem;
+      color:#00ff99;
+    }
+    #logoutBtn {
+      margin-top: 5px;
+      background:#cc0000;
+      color:#fff;
+      border:none;
+      padding:5px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:bold;
+      box-shadow: 0 3px #990000;
+    }
+    #logoutBtn:hover {
+      background:#ee2222;
+    }
+  </style>
 </head>
 <body>
 
 <h1>Clicker com Login e Leaderboard Local</h1>
 
-<div id="login-area">
+<section id="login-area">
   <input type="text" id="usernameInput" placeholder="Digite seu nome de usuário" maxlength="15" />
   <button id="loginBtn">Entrar / Criar Conta</button>
-</div>
+</section>
 
-<div id="game-area" style="display:none;">
+<main id="game-area" style="display:none;">
   <div id="userNameDisplay"></div>
   <button id="logoutBtn" title="Sair">Sair</button>
   <div id="score">0</div>
   <button id="clickBtn">Clique aqui!</button>
-
   <div class="upgrades" id="upgradesContainer"></div>
-</div>
+</main>
 
-<div id="leaderboard" style="display:none;">
+<aside id="leaderboard" style="display:none;">
   <h2>Leaderboard - Usuários Salvos</h2>
   <ol id="leaderboardList"></ol>
-</div>
+</aside>
 
 <script>
-  // Dados e lógica do jogo
-
   let currentUser = null;
   let data = null;
 
   const upgradeDefs = [
-    {
-      key: 'clickPower',
-      name: 'Power Click',
-      desc: 'Aumenta pontos por clique.',
-      baseCost: 50,
-      costInc: 1.6,
-      level: 0,
-      getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return level * 1; }
-    },
-    {
-      key: 'autoClicker',
-      name: 'Autoclicker',
-      desc: 'Ganha pontos automaticamente a cada segundo.',
-      baseCost: 200,
-      costInc: 1.7,
-      level: 0,
-      getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return level * 1; }
-    },
-    {
-      key: 'doubleClick',
-      name: 'Clique Duplo',
-      desc: 'Dobra os pontos por clique (multiplicador).',
-      baseCost: 500,
-      costInc: 2.0,
-      level: 0,
-      getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return Math.pow(2, level); }
-    },
-    {
-      key: 'autoDouble',
-      name: 'Auto x2',
-      desc: 'Dobra os pontos por segundo (multiplicador).',
-      baseCost: 800,
-      costInc: 2.2,
-      level: 0,
-      getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return Math.pow(2, level); }
-    },
-    {
-      key: 'clickBonus',
-      name: 'Bônus de Clique',
-      desc: 'Ganha pontos bônus fixos a cada clique.',
-      baseCost: 1000,
-      costInc: 2.5,
-      level: 0,
-      getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return level * 5; }
-    },
-    {
-      key: 'autoBonus',
-      name: 'Bônus Automático',
-      desc: 'Ganha pontos bônus fixos por segundo.',
-      baseCost: 1200,
-      costInc: 2.7,
-      level: 0,
-      getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return level * 5; }
-    }
+    { key: 'clickPower', name: 'Power Click', desc: 'Aumenta pontos por clique.', baseCost: 50, costInc: 1.6, apply: l => l * 1 },
+    { key: 'autoClicker', name: 'Autoclicker', desc: 'Ganha pontos automaticamente.', baseCost: 200, costInc: 1.7, apply: l => l * 1 },
+    { key: 'doubleClick', name: 'Clique Duplo', desc: 'Multiplica clique por 2.', baseCost: 500, costInc: 2.0, apply: l => Math.pow(2, l) },
+    { key: 'autoDouble', name: 'Auto x2', desc: 'Multiplica auto por 2.', baseCost: 800, costInc: 2.2, apply: l => Math.pow(2, l) },
+    { key: 'clickBonus', name: 'Bônus de Clique', desc: 'Adiciona pontos fixos ao clique.', baseCost: 1000, costInc: 2.5, apply: l => l * 5 },
+    { key: 'autoBonus', name: 'Bônus Automático', desc: 'Adiciona pontos fixos por segundo.', baseCost: 1200, costInc: 2.7, apply: l => l * 5 },
   ];
 
-  const loginArea = document.getElementById('login-area');
-  const usernameInput = document.getElementById('usernameInput');
-  const loginBtn = document.getElementById('loginBtn');
+  upgradeDefs.forEach(u => {
+    u.getCost = level => Math.floor(u.baseCost * Math.pow(u.costInc, level));
+    u.level = 0;
+  });
 
-  const gameArea = document.getElementById('game-area');
-  const userNameDisplay = document.getElementById('userNameDisplay');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const scoreEl = document.getElementById('score');
-  const clickBtn = document.getElementById('clickBtn');
-  const upgradesContainer = document.getElementById('upgradesContainer');
+  const $ = id => document.getElementById(id);
+  const loginArea = $('login-area');
+  const gameArea = $('game-area');
+  const leaderboardArea = $('leaderboard');
+  const usernameInput = $('usernameInput');
+  const loginBtn = $('loginBtn');
+  const logoutBtn = $('logoutBtn');
+  const scoreEl = $('score');
+  const clickBtn = $('clickBtn');
+  const upgradesContainer = $('upgradesContainer');
+  const leaderboardList = $('leaderboardList');
+  const userNameDisplay = $('userNameDisplay');
 
-  const leaderboardArea = document.getElementById('leaderboard');
-  const leaderboardList = document.getElementById('leaderboardList');
+  function loadAllUsers() {
+    return JSON.parse(localStorage.getItem('clicker_users') || '{}');
+  }
 
-  function saveAllUsers(users){
+  function saveAllUsers(users) {
     localStorage.setItem('clicker_users', JSON.stringify(users));
   }
 
-  function loadAllUsers(){
-    const json = localStorage.getItem('clicker_users');
-    return json ? JSON.parse(json) : {};
+  function saveUser() {
+    if (!currentUser || !data) return;
+    const users = loadAllUsers();
+    users[currentUser] = data;
+    saveAllUsers(users);
   }
 
-  function saveUser(){
-    if(!currentUser || !data) return;
-    const allUsers = loadAllUsers();
-    allUsers[currentUser] = data;
-    saveAllUsers(allUsers);
-  }
-
-  function loadUser(username){
-    const allUsers = loadAllUsers();
-    if(allUsers[username]){
-      data = allUsers[username];
-      upgradeDefs.forEach(u => {
-        u.level = data.upgrades[u.key] || 0;
-      });
+  function loadUser(username) {
+    const users = loadAllUsers();
+    if (users[username]) {
+      data = users[username];
+      upgradeDefs.forEach(u => u.level = data.upgrades[u.key] || 0);
     } else {
-      data = {
-        score: 0,
-        upgrades: {},
-      };
+      data = { score: 0, upgrades: {} };
       upgradeDefs.forEach(u => {
         u.level = 0;
         data.upgrades[u.key] = 0;
@@ -306,79 +231,50 @@
     }
   }
 
-  // Função corrigida para pontos por clique
-  function getPointsPerClick(){
-    let base = 1;
-
-    const clickPower = upgradeDefs.find(u => u.key === 'clickPower').level;
-    const clickBonus = upgradeDefs.find(u => u.key === 'clickBonus').level;
-    const doubleClick = upgradeDefs.find(u => u.key === 'doubleClick').level;
-
-    base += clickPower * 1;
-    base += clickBonus * 5;
-    base *= Math.pow(2, doubleClick);
-
-    return base;
+  function getUpgrade(key) {
+    return upgradeDefs.find(u => u.key === key).level;
   }
 
-  // Função corrigida para pontos por segundo
-  function getPointsPerSecond(){
-    let base = 0;
-
-    const autoClicker = upgradeDefs.find(u => u.key === 'autoClicker').level;
-    const autoBonus = upgradeDefs.find(u => u.key === 'autoBonus').level;
-    const autoDouble = upgradeDefs.find(u => u.key === 'autoDouble').level;
-
-    base += autoClicker * 1;
-    base += autoBonus * 5;
-    base *= Math.pow(2, autoDouble);
-
-    return base;
+  function getPointsPerClick() {
+    const base = 1 + getUpgrade('clickPower') + getUpgrade('clickBonus') * 5;
+    return base * Math.pow(2, getUpgrade('doubleClick'));
   }
 
-  function updateUI(){
+  function getPointsPerSecond() {
+    const base = getUpgrade('autoClicker') + getUpgrade('autoBonus') * 5;
+    return base * Math.pow(2, getUpgrade('autoDouble'));
+  }
+
+  function updateUI() {
     scoreEl.textContent = Math.floor(data.score);
-
     upgradesContainer.innerHTML = '';
     upgradeDefs.forEach(u => {
       const cost = u.getCost(u.level);
       const canBuy = data.score >= cost;
-
-      const div = document.createElement('div');
-      div.classList.add('upgrade');
-
-      div.innerHTML = `
-        <h2>${u.name}</h2>
-        <p>${u.desc}</p>
-        <div class="cost">Custo: ${cost} pontos</div>
-        <button ${canBuy ? '' : 'disabled'} data-key="${u.key}">Comprar</button>
-        <div>Nível: ${u.level}</div>
+      upgradesContainer.innerHTML += `
+        <div class="upgrade">
+          <h2>${u.name}</h2>
+          <p>${u.desc}</p>
+          <div class="cost">Custo: ${cost} pontos</div>
+          <button ${canBuy ? '' : 'disabled'} data-key="${u.key}">Comprar</button>
+          <div>Nível: ${u.level}</div>
+        </div>
       `;
-
-      upgradesContainer.appendChild(div);
     });
   }
 
-  function updateLeaderboard(){
-    const allUsers = loadAllUsers();
-    const arr = Object.entries(allUsers);
-    arr.sort((a,b) => (b[1].score || 0) - (a[1].score || 0));
-
-    leaderboardList.innerHTML = '';
-    arr.forEach(([name, userData], i) => {
-      if(i >= 10) return;
-      const li = document.createElement('li');
-      li.textContent = `${name}: ${Math.floor(userData.score)} pts`;
-      leaderboardList.appendChild(li);
-    });
-    leaderboardArea.style.display = arr.length ? 'block' : 'none';
+  function updateLeaderboard() {
+    const users = Object.entries(loadAllUsers()).sort((a, b) => b[1].score - a[1].score);
+    leaderboardList.innerHTML = users.slice(0, 10).map(([name, u]) =>
+      `<li>${name}: ${Math.floor(u.score)} pts</li>`
+    ).join('');
+    leaderboardArea.style.display = users.length ? 'block' : 'none';
   }
 
-  function buyUpgrade(key){
+  function buyUpgrade(key) {
     const u = upgradeDefs.find(up => up.key === key);
-    if(!u) return;
     const cost = u.getCost(u.level);
-    if(data.score >= cost){
+    if (data.score >= cost) {
       data.score -= cost;
       u.level++;
       data.upgrades[key] = u.level;
@@ -390,10 +286,7 @@
 
   loginBtn.onclick = () => {
     const username = usernameInput.value.trim();
-    if(username.length < 3){
-      alert('Digite um nome com pelo menos 3 caracteres.');
-      return;
-    }
+    if (username.length < 3) return alert('Digite um nome com pelo menos 3 caracteres.');
     currentUser = username;
     loadUser(currentUser);
     userNameDisplay.textContent = `Usuário: ${currentUser}`;
@@ -419,21 +312,19 @@
     updateLeaderboard();
   };
 
-  upgradesContainer.onclick = (e) => {
-    if(e.target.tagName === 'BUTTON'){
-      const key = e.target.dataset.key;
-      buyUpgrade(key);
+  upgradesContainer.onclick = e => {
+    if (e.target.tagName === 'BUTTON') {
+      buyUpgrade(e.target.dataset.key);
     }
   };
 
   setInterval(() => {
-    if(!data) return;
+    if (!data) return;
     data.score += getPointsPerSecond();
     saveUser();
     updateUI();
     updateLeaderboard();
   }, 1000);
-
 </script>
 
 </body>

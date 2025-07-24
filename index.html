@@ -1,172 +1,208 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Clicker Game com Tabela Global</title>
+  <title>Clicker com Upgrades</title>
   <style>
     body {
+      background: #121212;
+      color: #eee;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      text-align: center;
-      padding: 40px;
-      background: #f0f0f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      user-select: none;
     }
     h1 {
-      color: #333;
-      margin-bottom: 10px;
+      margin-bottom: 0.2em;
     }
-    input, button {
-      font-size: 1.2rem;
-      padding: 10px 15px;
-      margin: 10px 5px;
-      border-radius: 5px;
-      border: 1px solid #aaa;
-    }
-    input {
-      width: 200px;
+    #score {
+      font-size: 3rem;
+      margin: 20px 0 40px;
+      color: #00ff99;
+      text-shadow: 0 0 10px #00ff99;
     }
     button {
       cursor: pointer;
-      background: #4CAF50;
-      color: white;
+      background: #00cc77;
       border: none;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: #45a049;
-    }
-    #score {
-      font-size: 2rem;
-      margin: 20px 0;
-      color: #222;
-    }
-    #leaderboard {
-      margin-top: 40px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      background: white;
-      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    #leaderboard h3 {
-      margin-bottom: 15px;
-      color: #555;
-    }
-    #leaderboard ol {
-      list-style: none;
-      padding-left: 0;
-    }
-    #leaderboard li {
-      background: #e8e8ff;
-      margin: 5px 0;
-      padding: 8px 12px;
-      border-radius: 5px;
+      padding: 15px 30px;
+      font-size: 1.5rem;
+      color: #121212;
       font-weight: bold;
-      color: #222;
-      text-align: left;
+      box-shadow: 0 5px #009955;
+      transition: background 0.3s ease;
+      margin-bottom: 30px;
+      width: 220px;
+    }
+    button:hover:not(:disabled) {
+      background: #00e685;
+    }
+    button:disabled {
+      background: #444;
+      box-shadow: none;
+      cursor: default;
+      color: #888;
+    }
+    .upgrades {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      max-width: 700px;
+      justify-content: center;
+    }
+    .upgrade {
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      width: 200px;
+      box-shadow: 0 0 15px #00774488 inset;
+      text-align: center;
+    }
+    .upgrade h2 {
+      margin-top: 0;
+      color: #00ff99;
+      font-size: 1.4rem;
+    }
+    .upgrade p {
+      margin: 8px 0 12px;
+      font-size: 1rem;
+      min-height: 45px;
+    }
+    .cost {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #55ff88;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #555;
     }
   </style>
 </head>
 <body>
 
-  <h1>Clicker Global (Melhor Pontuação)</h1>
-  <input id="nickname" type="text" placeholder="Digite seu apelido" maxlength="15" />
-  <div id="score">Score: 0</div>
-  <button id="clickBtn">Clique Aqui!</button>
-  <button id="submitBtn">Enviar Score</button>
+  <h1>Clicker com Upgrades</h1>
+  <div id="score">0</div>
+  <button id="clickBtn">Clique aqui!</button>
 
-  <div id="leaderboard">
-    <h3>🏆 Tabela Global - Top 10</h3>
-    <ol id="leaderboardList"></ol>
+  <div class="upgrades">
+    <div class="upgrade" id="upgrade1">
+      <h2>Upgrade de Click</h2>
+      <p>Aumenta pontos por clique.</p>
+      <div class="cost">Custo: <span id="costClick">50</span> pontos</div>
+      <button id="buyClick">Comprar</button>
+      <div>Pontos por clique: <span id="pointsPerClick">1</span></div>
+      <div>Nível: <span id="levelClick">0</span></div>
+    </div>
+
+    <div class="upgrade" id="upgrade2">
+      <h2>Autoclicker</h2>
+      <p>Ganha pontos automaticamente.</p>
+      <div class="cost">Custo: <span id="costAuto">200</span> pontos</div>
+      <button id="buyAuto">Comprar</button>
+      <div>Pontos por segundo: <span id="pointsPerSecond">0</span></div>
+      <div>Nível: <span id="levelAuto">0</span></div>
+    </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      get,
-      set,
-      query,
-      orderByChild,
-      limitToLast,
-      onValue
-    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+  <footer>Feito por você, o mestre dos clicks!</footer>
 
-    // TODO: Replace with your Firebase config
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const scoresRef = ref(db, "scores");
-
-    const scoreEl = document.getElementById("score");
-    const clickBtn = document.getElementById("clickBtn");
-    const submitBtn = document.getElementById("submitBtn");
-    const nicknameInput = document.getElementById("nickname");
-    const leaderboardList = document.getElementById("leaderboardList");
-
+  <script>
+    // Variáveis principais
     let score = 0;
+    let pointsPerClick = 1;
+    let pointsPerSecond = 0;
 
-    clickBtn.onclick = () => {
-      score++;
-      scoreEl.textContent = `Score: ${score}`;
-    };
-
-    submitBtn.onclick = async () => {
-      const nickname = nicknameInput.value.trim();
-      if (!nickname) {
-        alert("Por favor, digite seu apelido!");
-        return;
-      }
-      if (score === 0) {
-        alert("Seu score está 0, clique para jogar!");
-        return;
-      }
-
-      const userScoreRef = ref(db, `scores/${nickname}`);
-      const snapshot = await get(userScoreRef);
-
-      if (!snapshot.exists() || score > snapshot.val().score) {
-        await set(userScoreRef, { nickname, score });
-        alert("Score enviado com sucesso!");
-      } else {
-        alert("Seu score não é maior que seu melhor score salvo.");
+    // Upgrades dados
+    const upgrades = {
+      click: {
+        level: 0,
+        baseCost: 50,
+        cost: 50,
+        increment: 1.5,
+        ptsPerClickIncrease: 1,
+      },
+      auto: {
+        level: 0,
+        baseCost: 200,
+        cost: 200,
+        increment: 1.7,
+        ptsPerSecondIncrease: 1,
       }
     };
 
-    function updateLeaderboard() {
-      const topScoresQuery = query(scoresRef, orderByChild("score"), limitToLast(10));
-      onValue(topScoresQuery, (snapshot) => {
-        const scores = [];
-        snapshot.forEach(childSnap => {
-          scores.push(childSnap.val());
-        });
-        scores.sort((a, b) => b.score - a.score);
+    // Elementos
+    const scoreEl = document.getElementById('score');
+    const clickBtn = document.getElementById('clickBtn');
 
-        leaderboardList.innerHTML = "";
-        scores.forEach(({ nickname, score }, index) => {
-          const li = document.createElement("li");
-          li.textContent = `${index + 1}. ${nickname} — ${score}`;
-          leaderboardList.appendChild(li);
-        });
-      });
+    const costClickEl = document.getElementById('costClick');
+    const costAutoEl = document.getElementById('costAuto');
+
+    const buyClickBtn = document.getElementById('buyClick');
+    const buyAutoBtn = document.getElementById('buyAuto');
+
+    const pointsPerClickEl = document.getElementById('pointsPerClick');
+    const pointsPerSecondEl = document.getElementById('pointsPerSecond');
+
+    const levelClickEl = document.getElementById('levelClick');
+    const levelAutoEl = document.getElementById('levelAuto');
+
+    // Atualiza a tela
+    function updateUI() {
+      scoreEl.textContent = score.toFixed(0);
+      costClickEl.textContent = upgrades.click.cost.toFixed(0);
+      costAutoEl.textContent = upgrades.auto.cost.toFixed(0);
+
+      pointsPerClickEl.textContent = pointsPerClick.toFixed(0);
+      pointsPerSecondEl.textContent = pointsPerSecond.toFixed(0);
+
+      levelClickEl.textContent = upgrades.click.level;
+      levelAutoEl.textContent = upgrades.auto.level;
+
+      buyClickBtn.disabled = score < upgrades.click.cost;
+      buyAutoBtn.disabled = score < upgrades.auto.cost;
     }
 
-    updateLeaderboard();
+    // Comprar upgrade click
+    buyClickBtn.onclick = () => {
+      if(score >= upgrades.click.cost){
+        score -= upgrades.click.cost;
+        upgrades.click.level++;
+        pointsPerClick += upgrades.click.ptsPerClickIncrease;
+        upgrades.click.cost *= upgrades.click.increment;
+        updateUI();
+      }
+    };
 
+    // Comprar upgrade auto
+    buyAutoBtn.onclick = () => {
+      if(score >= upgrades.auto.cost){
+        score -= upgrades.auto.cost;
+        upgrades.auto.level++;
+        pointsPerSecond += upgrades.auto.ptsPerSecondIncrease;
+        upgrades.auto.cost *= upgrades.auto.increment;
+        updateUI();
+      }
+    };
+
+    // Click principal
+    clickBtn.onclick = () => {
+      score += pointsPerClick;
+      updateUI();
+    };
+
+    // Loop automático para pontos por segundo
+    setInterval(() => {
+      score += pointsPerSecond;
+      updateUI();
+    }, 1000);
+
+    updateUI();
   </script>
 </body>
 </html>

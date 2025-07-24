@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clicker Game com Tabela Global</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: #f0f0f5;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    input, button {
+      font-size: 1.2rem;
+      padding: 10px 15px;
+      margin: 10px 5px;
+      border-radius: 5px;
+      border: 1px solid #aaa;
+    }
+    input {
+      width: 200px;
+    }
+    button {
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #score {
+      font-size: 2rem;
+      margin: 20px 0;
+      color: #222;
+    }
+    #leaderboard {
+      margin-top: 40px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #leaderboard h3 {
+      margin-bottom: 15px;
+      color: #555;
+    }
+    #leaderboard ol {
+      list-style: none;
+      padding-left: 0;
+    }
+    #leaderboard li {
+      background: #e8e8ff;
+      margin: 5px 0;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-weight: bold;
+      color: #222;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Clicker Global (Melhor Pontuação)</h1>
+  <input id="nickname" type="text" placeholder="Digite seu apelido" maxlength="15" />
+  <div id="score">Score: 0</div>
+  <button id="clickBtn">Clique Aqui!</button>
+  <button id="submitBtn">Enviar Score</button>
+
+  <div id="leaderboard">
+    <h3>🏆 Tabela Global - Top 10</h3>
+    <ol id="leaderboardList"></ol>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      get,
+      set,
+      query,
+      orderByChild,
+      limitToLast,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+    // TODO: Replace with your Firebase config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const scoresRef = ref(db, "scores");
+
+    const scoreEl = document.getElementById("score");
+    const clickBtn = document.getElementById("clickBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const nicknameInput = document.getElementById("nickname");
+    const leaderboardList = document.getElementById("leaderboardList");
+
+    let score = 0;
+
+    clickBtn.onclick = () => {
+      score++;
+      scoreEl.textContent = `Score: ${score}`;
+    };
+
+    submitBtn.onclick = async () => {
+      const nickname = nicknameInput.value.trim();
+      if (!nickname) {
+        alert("Por favor, digite seu apelido!");
+        return;
+      }
+      if (score === 0) {
+        alert("Seu score está 0, clique para jogar!");
+        return;
+      }
+
+      const userScoreRef = ref(db, `scores/${nickname}`);
+      const snapshot = await get(userScoreRef);
+
+      if (!snapshot.exists() || score > snapshot.val().score) {
+        await set(userScoreRef, { nickname, score });
+        alert("Score enviado com sucesso!");
+      } else {
+        alert("Seu score não é maior que seu melhor score salvo.");
+      }
+    };
+
+    function updateLeaderboard() {
+      const topScoresQuery = query(scoresRef, orderByChild("score"), limitToLast(10));
+      onValue(topScoresQuery, (snapshot) => {
+        const scores = [];
+        snapshot.forEach(childSnap => {
+          scores.push(childSnap.val());
+        });
+        scores.sort((a, b) => b.score - a.score);
+
+        leaderboardList.innerHTML = "";
+        scores.forEach(({ nickname, score }, index) => {
+          const li = document.createElement("li");
+          li.textContent = `${index + 1}. ${nickname} — ${score}`;
+          leaderboardList.appendChild(li);
+        });
+      });
+    }
+
+    updateLeaderboard();
+
+  </script>
+</body>
+</html>

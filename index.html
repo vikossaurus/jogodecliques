@@ -193,7 +193,6 @@
   let currentUser = null;
   let data = null;
 
-  // Upgrades com nome, descrição, custo base, incremento custo, e efeito na pontuação
   const upgradeDefs = [
     {
       key: 'clickPower',
@@ -203,7 +202,7 @@
       costInc: 1.6,
       level: 0,
       getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return level * 1; } // cada nível +1 ponto por clique
+      applyEffect(level) { return level * 1; }
     },
     {
       key: 'autoClicker',
@@ -213,7 +212,7 @@
       costInc: 1.7,
       level: 0,
       getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return level * 1; } // cada nível +1 ponto/s
+      applyEffect(level) { return level * 1; }
     },
     {
       key: 'doubleClick',
@@ -223,7 +222,7 @@
       costInc: 2.0,
       level: 0,
       getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return Math.pow(2, level); } // multiplicador 2^level
+      applyEffect(level) { return Math.pow(2, level); }
     },
     {
       key: 'autoDouble',
@@ -243,7 +242,7 @@
       costInc: 2.5,
       level: 0,
       getCost(level) { return Math.floor(this.baseCost * Math.pow(this.costInc, level)); },
-      applyEffect(level) { return level * 5; } // +5 pontos fixos por nível
+      applyEffect(level) { return level * 5; }
     },
     {
       key: 'autoBonus',
@@ -271,18 +270,15 @@
   const leaderboardArea = document.getElementById('leaderboard');
   const leaderboardList = document.getElementById('leaderboardList');
 
-  // Salva todos os usuários no localStorage em chave "clicker_users"
   function saveAllUsers(users){
     localStorage.setItem('clicker_users', JSON.stringify(users));
   }
 
-  // Carrega todos os usuários do localStorage (objeto)
   function loadAllUsers(){
     const json = localStorage.getItem('clicker_users');
     return json ? JSON.parse(json) : {};
   }
 
-  // Salva dados do usuário atual
   function saveUser(){
     if(!currentUser || !data) return;
     const allUsers = loadAllUsers();
@@ -290,12 +286,10 @@
     saveAllUsers(allUsers);
   }
 
-  // Carrega dados do usuário atual, ou cria novo
   function loadUser(username){
     const allUsers = loadAllUsers();
     if(allUsers[username]){
       data = allUsers[username];
-      // Restaura levels no upgradeDefs
       upgradeDefs.forEach(u => {
         u.level = data.upgrades[u.key] || 0;
       });
@@ -312,27 +306,36 @@
     }
   }
 
-  // Calcula pontos por clique (considera upgrades)
+  // Função corrigida para pontos por clique
   function getPointsPerClick(){
-    // Base 1 ponto
     let base = 1;
-    base += upgradeDefs.find(u => u.key === 'clickPower').applyEffect(u.level);
-    base += upgradeDefs.find(u => u.key === 'clickBonus').applyEffect(u.level);
-    // Multiplicador
-    base *= upgradeDefs.find(u => u.key === 'doubleClick').applyEffect(u.level);
+
+    const clickPower = upgradeDefs.find(u => u.key === 'clickPower').level;
+    const clickBonus = upgradeDefs.find(u => u.key === 'clickBonus').level;
+    const doubleClick = upgradeDefs.find(u => u.key === 'doubleClick').level;
+
+    base += clickPower * 1;
+    base += clickBonus * 5;
+    base *= Math.pow(2, doubleClick);
+
     return base;
   }
 
-  // Calcula pontos por segundo (auto)
+  // Função corrigida para pontos por segundo
   function getPointsPerSecond(){
     let base = 0;
-    base += upgradeDefs.find(u => u.key === 'autoClicker').applyEffect(u.level);
-    base += upgradeDefs.find(u => u.key === 'autoBonus').applyEffect(u.level);
-    base *= upgradeDefs.find(u => u.key === 'autoDouble').applyEffect(u.level);
+
+    const autoClicker = upgradeDefs.find(u => u.key === 'autoClicker').level;
+    const autoBonus = upgradeDefs.find(u => u.key === 'autoBonus').level;
+    const autoDouble = upgradeDefs.find(u => u.key === 'autoDouble').level;
+
+    base += autoClicker * 1;
+    base += autoBonus * 5;
+    base *= Math.pow(2, autoDouble);
+
     return base;
   }
 
-  // Atualiza UI do jogo
   function updateUI(){
     scoreEl.textContent = Math.floor(data.score);
 
@@ -356,7 +359,6 @@
     });
   }
 
-  // Atualiza leaderboard local
   function updateLeaderboard(){
     const allUsers = loadAllUsers();
     const arr = Object.entries(allUsers);
@@ -372,7 +374,6 @@
     leaderboardArea.style.display = arr.length ? 'block' : 'none';
   }
 
-  // Comprar upgrade
   function buyUpgrade(key){
     const u = upgradeDefs.find(up => up.key === key);
     if(!u) return;
@@ -386,8 +387,6 @@
       updateLeaderboard();
     }
   }
-
-  // Eventos
 
   loginBtn.onclick = () => {
     const username = usernameInput.value.trim();
@@ -427,7 +426,6 @@
     }
   };
 
-  // Loop auto click
   setInterval(() => {
     if(!data) return;
     data.score += getPointsPerSecond();
@@ -440,5 +438,3 @@
 
 </body>
 </html>
-
-     
